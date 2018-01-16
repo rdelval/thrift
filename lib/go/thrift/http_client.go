@@ -48,7 +48,7 @@ type THttpClientTransportFactory struct {
 	url     string
 }
 
-func (p *THttpClientTransportFactory) GetTransport(trans TTransport) TTransport {
+func (p *THttpClientTransportFactory) GetTransport(trans TTransport) (TTransport, error) {
 	if trans != nil {
 		t, ok := trans.(*THttpClient)
 		if ok && t.url != nil {
