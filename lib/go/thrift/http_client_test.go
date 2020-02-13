@@ -37,7 +37,7 @@ func TestHttpClient(t *testing.T) {
 	TransportTest(t, trans, trans)
 
 	t.Run("nilBuffer", func(t *testing.T){
-		trans.Close()
+		_ = trans.Close()
 		if _, err = trans.Write([]byte{1,2,3,4}); err == nil {
 			t.Fatalf("writing to a closed transport did not result in an error")
 		}
