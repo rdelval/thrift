@@ -29,25 +29,19 @@ func TestHttpClient(t *testing.T) {
 	if l != nil {
 		defer l.Close()
 	}
-	trans, err := NewTHttpPostClient("http://" + addr.String())
+	trans, err := NewTHttpClient("http://" + addr.String())
 	if err != nil {
 		l.Close()
 		t.Fatalf("Unable to connect to %s: %s", addr.String(), err)
 	}
 	TransportTest(t, trans, trans)
-}
 
-func TestHttpClientHeaders(t *testing.T) {
-	l, addr := HttpClientSetupForTest(t)
-	if l != nil {
-		defer l.Close()
-	}
-	trans, err := NewTHttpPostClient("http://" + addr.String())
-	if err != nil {
-		l.Close()
-		t.Fatalf("Unable to connect to %s: %s", addr.String(), err)
-	}
-	TransportHeaderTest(t, trans, trans)
+	t.Run("nilBuffer", func(t *testing.T){
+		trans.Close()
+		if _, err = trans.Write([]byte{1,2,3,4}); err == nil {
+			t.Fatalf("writing to a closed transport did not result in an error")
+		}
+	})
 }
 
 func TestHttpCustomClient(t *testing.T) {
@@ -58,7 +52,7 @@ func TestHttpCustomClient(t *testing.T) {
 
 	httpTransport := &customHttpTransport{}
 
-	trans, err := NewTHttpPostClientWithOptions("http://"+addr.String(), THttpClientOptions{
+	trans, err := NewTHttpClientWithOptions("http://"+addr.String(), THttpClientOptions{
 		Client: &http.Client{
 			Transport: httpTransport,
 		},
@@ -84,7 +78,7 @@ func TestHttpCustomClientPackageScope(t *testing.T) {
 		Transport: httpTransport,
 	}
 
-	trans, err := NewTHttpPostClient("http://" + addr.String())
+	trans, err := NewTHttpClient("http://" + addr.String())
 	if err != nil {
 		l.Close()
 		t.Fatalf("Unable to connect to %s: %s", addr.String(), err)
